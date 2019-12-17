@@ -1,0 +1,56 @@
+<form name="SelectCustomer" role="form">
+    <!-- kein Kunde ausgewählt -->
+    <div class="alert alert-danger" ng-if="!CUSTOMER_ID">
+        <p>Bitte w&auml;hlen Sie einen bestehenden Kunden aus oder legen Sie einen neuen an, indem Sie <b>Kunden
+            anlegen</b> ausw&auml;hlen.</p>
+    </div>
+
+    <!-- Dropdown Users -->
+    <div class="form-group">
+        <select cam-choices="AVAILABLE_CUSTOMERS"
+                cam-variable-name="CUSTOMER_ID"
+                cam-variable-type="Long">
+        </select>
+    </div>
+
+    <!-- Einen Punkt aus Dropdown gewählt -->
+    <div ng-if="CUSTOMER_ID">
+        <p class="alert alert-success" ng-if="CUSTOMER_ID!=-1">Ein bestehender Kunde wurde ausgew&auml;hlt.</p>
+        <p class="alert alert-danger" ng-if="CUSTOMER_ID==-1"> Bitte geben Sie Namen, Adresse und E-Mail ein oder w&auml;hlen
+            Sie einen bestehenden Kunden aus.</p>
+    </div>
+
+    <!-- Name -->
+    <div class="form-group">
+        <label>Name</label>
+        <input cam-variable-name="CUSTOMER_NAME"
+               cam-variable-type="String"
+               class="form-control"
+               ng-disabled="CUSTOMER_ID!=-1"
+               ng-required="CUSTOMER_ID==-1"
+               type="text"/>
+    </div>
+
+    <!-- Adresse -->
+    <div class="form-group">
+        <label>Adresse</label>
+        <input cam-variable-name="CUSTOMER_ADDRESS"
+               cam-variable-type="String"
+               class="form-control"
+               ng-disabled="CUSTOMER_ID!=-1"
+               ng-required="CUSTOMER_ID==-1"
+               type="text"/>
+    </div>
+
+    <!-- E-Mail -->
+    <div class="form-group">
+        <label>E-Mail</label>
+        <input cam-variable-name="CUSTOMER_MAIL"
+               cam-variable-type="String"
+               class="form-control"
+               ng-disabled="CUSTOMER_ID!=-1"
+               ng-required="CUSTOMER_ID==-1"
+               type="text"/>
+    </div>
+
+</form>
