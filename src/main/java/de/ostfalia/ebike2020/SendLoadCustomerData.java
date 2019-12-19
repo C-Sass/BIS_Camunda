@@ -13,7 +13,7 @@ public class SendLoadCustomerData implements JavaDelegate {
         hashMap.put("CUSTOMER_NAME", execution.getVariable("CUSTOMER_NAME"));
         hashMap.put("CUSTOMER_ADDRESS", execution.getVariable("CUSTOMER_ADDRESS"));
         hashMap.put("CUSTOMER_MAIL", execution.getVariable("CUSTOMER_MAIL"));
-        hashMap.put("CUSTOMER_BUSINESS_KEY", execution.getVariable("CUSTOMER_BUSINESS_KEY"));
+        hashMap.put("DEMO_BUSINESS_KEY", execution.getVariable("DEMO_BUSINESS_KEY"));
 
         RuntimeService runtimeService = execution.getProcessEngineServices().getRuntimeService();
         runtimeService.startProcessInstanceByMessage("Lade Kundendaten", hashMap);

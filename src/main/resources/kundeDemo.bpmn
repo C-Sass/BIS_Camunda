@@ -5,8 +5,8 @@
   <bpmn:collaboration id="Collaboration_0o802iq">
     <bpmn:participant id="Participant_083sxxf" processRef="kundeDemo" />
     <bpmn:participant id="Participant_1weuxjz" processRef="Process_10chf0i" />
-    <bpmn:messageFlow id="MessageFlow_1kula5o" sourceRef="Task_1rhrf00" targetRef="IntermediateThrowEvent_1dvsjq1" />
     <bpmn:messageFlow id="MessageFlow_0lmk2e2" sourceRef="Task_1idgs87" targetRef="IntermediateThrowEvent_1f6xnui" />
+    <bpmn:messageFlow id="MessageFlow_15ne8c8" sourceRef="Task_1rhrf00" targetRef="IntermediateThrowEvent_1dvsjq1" />
   </bpmn:collaboration>
   <bpmn:process id="kundeDemo" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1172qiw">
@@ -37,7 +37,7 @@
     <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_1f6xnui" name="Sende Kundendaten">
       <bpmn:incoming>SequenceFlow_1xssepl</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_07ppd3a</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_0v4tqe3" />
+      <bpmn:messageEventDefinition messageRef="Message_1ye4j2t" />
     </bpmn:intermediateCatchEvent>
     <bpmn:userTask id="Task_192sjur" name="Kundendaten anzeigen" camunda:formKey="embedded:app:forms/ShowInfo.html" camunda:assignee="mary">
       <bpmn:incoming>SequenceFlow_07ppd3a</bpmn:incoming>
@@ -54,7 +54,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_1rkhpid" sourceRef="Task_192sjur" targetRef="EndEvent_1qisw7g" />
     <bpmn:dataStoreReference id="DataStoreReference_0c1hxxo" />
   </bpmn:process>
-  <bpmn:process id="Process_10chf0i" isExecutable="true">
+  <bpmn:process id="Process_10chf0i" isExecutable="true" camunda:isStartableInTasklist="false">
     <bpmn:exclusiveGateway id="ExclusiveGateway_1x1x6rn">
       <bpmn:incoming>SequenceFlow_0hri458</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_12r8hgm</bpmn:outgoing>
@@ -63,10 +63,6 @@
     <bpmn:endEvent id="EndEvent_1rmoov1">
       <bpmn:incoming>SequenceFlow_0lfl6o0</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_1dvsjq1" name="Lade Kundendaten">
-      <bpmn:outgoing>SequenceFlow_0hri458</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_0scxauv" />
-    </bpmn:intermediateCatchEvent>
     <bpmn:serviceTask id="Task_1o5mjag" name="Kundendaten laden" camunda:class="de.ostfalia.ebike2020.SetCustomerValue">
       <bpmn:incoming>SequenceFlow_12r8hgm</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0n3gh2z</bpmn:outgoing>
@@ -78,23 +74,30 @@
     </bpmn:serviceTask>
     <bpmn:serviceTask id="Task_0xnwdr5" name="Kunden erstellen" camunda:class="de.ostfalia.ebike2020.CreateCustomer">
       <bpmn:incoming>SequenceFlow_1pwr8r0</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_15s5216</bpmn:outgoing>
       <bpmn:dataOutputAssociation id="DataOutputAssociation_10xql16">
         <bpmn:targetRef>DataStoreReference_0c1hxxo</bpmn:targetRef>
       </bpmn:dataOutputAssociation>
     </bpmn:serviceTask>
     <bpmn:sendTask id="Task_1idgs87" name="Sende Kundendaten" camunda:class="de.ostfalia.ebike2020.SendCustomerData">
       <bpmn:incoming>SequenceFlow_0n3gh2z</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_15s5216</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0lfl6o0</bpmn:outgoing>
     </bpmn:sendTask>
     <bpmn:sequenceFlow id="SequenceFlow_0lfl6o0" sourceRef="Task_1idgs87" targetRef="EndEvent_1rmoov1" />
     <bpmn:sequenceFlow id="SequenceFlow_0n3gh2z" sourceRef="Task_1o5mjag" targetRef="Task_1idgs87" />
     <bpmn:sequenceFlow id="SequenceFlow_1pwr8r0" name="Ja" sourceRef="ExclusiveGateway_1x1x6rn" targetRef="Task_0xnwdr5">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">CUSTOMER_ID &gt; 0</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${CUSTOMER_ID == -1}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_12r8hgm" name="Nein" sourceRef="ExclusiveGateway_1x1x6rn" targetRef="Task_1o5mjag">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">CUSTOMER_ID = -1</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${CUSTOMER_ID &gt; 0}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_0hri458" sourceRef="IntermediateThrowEvent_1dvsjq1" targetRef="ExclusiveGateway_1x1x6rn" />
+    <bpmn:startEvent id="IntermediateThrowEvent_1dvsjq1" name="Lade Kundendaten">
+      <bpmn:outgoing>SequenceFlow_0hri458</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_0scxauv" />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_15s5216" sourceRef="Task_0xnwdr5" targetRef="Task_1idgs87" />
   </bpmn:process>
   <bpmn:message id="Message_0scxauv" name="Lade Kundendaten" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
@@ -186,12 +189,6 @@
         <di:waypoint x="831" y="630" />
         <di:waypoint x="903" y="630" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="IntermediateCatchEvent_0sbbahr_di" bpmnElement="IntermediateThrowEvent_1dvsjq1">
-        <dc:Bounds x="353" y="612" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="339" y="655" width="66" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_1jub01g_di" bpmnElement="Task_1o5mjag">
         <dc:Bounds x="561" y="590" width="100" height="80" />
       </bpmndi:BPMNShape>
@@ -201,12 +198,6 @@
       <bpmndi:BPMNShape id="SendTask_1i6ndj0_di" bpmnElement="Task_1idgs87">
         <dc:Bounds x="731" y="590" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="MessageFlow_1kula5o_di" bpmnElement="MessageFlow_1kula5o">
-        <di:waypoint x="670" y="250" />
-        <di:waypoint x="670" y="550" />
-        <di:waypoint x="371" y="550" />
-        <di:waypoint x="371" y="612" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MessageFlow_0lmk2e2_di" bpmnElement="MessageFlow_0lmk2e2">
         <di:waypoint x="800" y="590" />
         <di:waypoint x="800" y="228" />
@@ -231,6 +222,23 @@
         <di:waypoint x="260" y="810" />
         <di:waypoint x="260" y="440" />
         <di:waypoint x="445" y="440" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_15ne8c8_di" bpmnElement="MessageFlow_15ne8c8">
+        <di:waypoint x="670" y="250" />
+        <di:waypoint x="670" y="510" />
+        <di:waypoint x="371" y="510" />
+        <di:waypoint x="371" y="612" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="StartEvent_0yc3n9n_di" bpmnElement="IntermediateThrowEvent_1dvsjq1">
+        <dc:Bounds x="353" y="612" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="339" y="655" width="66" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_15s5216_di" bpmnElement="SequenceFlow_15s5216">
+        <di:waypoint x="661" y="740" />
+        <di:waypoint x="781" y="740" />
+        <di:waypoint x="781" y="670" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

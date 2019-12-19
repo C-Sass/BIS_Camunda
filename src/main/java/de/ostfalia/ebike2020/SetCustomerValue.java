@@ -18,7 +18,7 @@ public class SetCustomerValue implements JavaDelegate {
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
-            execution.setVariable("CUSTOMER_NAME", resultSet.getString("name"));
+            execution.setVariable("CUSTOMER_NAME", resultSet.getString("Name"));
             execution.setVariable("CUSTOMER_ADDRESS", resultSet.getString("Adresse"));
             execution.setVariable("CUSTOMER_MAIL", resultSet.getString("E-Mail"));
         }

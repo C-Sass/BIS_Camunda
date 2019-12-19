@@ -12,15 +12,15 @@ import java.util.Map;
 
 public class LoadCustomer implements JavaDelegate {
     public void execute(DelegateExecution execution) throws Exception {
-        Map<Integer, String> customers = new HashMap<>();
         Connection connection = DatabaseConnection.getConnection();
+        Map<Integer, String> customers = new HashMap<>();
 
         String query = "SELECT * FROM kunde";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
-            customers.put(resultSet.getInt("idKunde"), resultSet.getString("name"));
+            customers.put(resultSet.getInt("idKunde"), resultSet.getString("Name"));
         }
         customers.put(-1, "Kunde anlegen");
 
