@@ -18,7 +18,7 @@ public class CreateCustomer implements JavaDelegate {
 
         execution.setVariable("CUSTOMER_ID", id);
 
-        String sql = "INSERT INTO kunde (idKunde, Name, Adresse, 'E-Mail')" + "VALUES (?,?,?,?)";
+        String sql = "INSERT INTO `e_bike_2020`.`kunde` (`idKunde`, `Name`, `Adresse`, `E-Mail`) VALUES (?, ?, ?, ?);";
 
         CallableStatement callableStatement = connection.prepareCall(sql);
         callableStatement.setInt(1, id);
