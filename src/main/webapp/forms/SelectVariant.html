@@ -1,3 +1,48 @@
 <form name="SelectVariant" role=form>
-    //TODO Add Form
+
+    <p>
+    <div class="form-group">
+        <label>Bitte Rahmen auswählen:</label><br>
+        <select cam-choices="AVAILABLE_RAHMEN"
+                cam-variable-name="RAHMEN_ID"
+                cam-variable-type="Integer">
+        </select>
+    </div>
+
+    <p>
+    <div class="form-group">
+        <label>Bitte Farbe auswählen:</label><br>
+        <select cam-choices="AVAILABLE_FARBE"
+                cam-variable-name="FARBE_ID"
+                cam-variable-type="Integer">
+        </select>
+    </div>
+
+    <p>
+    <div class="form-group">
+        <label>Bitte Akku auswählen:</label><br>
+        <select cam-choices="AVAILABLE_AKKU"
+                cam-variable-name="AKKU_ID"
+                cam-variable-type="Integer">
+        </select>
+    </div>
+
+    <p>
+    <div class="form-group">
+        <label>Bitte Motor auswählen:</label><br>
+        <select cam-choices="AVAILABLE_MOTOR"
+                cam-variable-name="MOTOR_ID"
+                cam-variable-type="Integer">
+        </select>
+    </div>
+
+    <p>
+    <div class="form-group">
+        <label>Haben sie noch andere Wünsche?</label><br>
+        <input cam-variable-name="ADDITIONAL_WISH"
+               cam-variable-type="String"
+               class="form-control"
+               type="text"/>
+    </div>
+
 </form>
