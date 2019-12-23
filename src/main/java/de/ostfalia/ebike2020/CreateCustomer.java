@@ -15,6 +15,7 @@ public class CreateCustomer implements JavaDelegate {
         ResultSet resultSet = max.executeQuery();
         int id = !resultSet.next() ? 0 : resultSet.getInt(1) + 1;
         resultSet.close();
+        max.close();
 
         execution.setVariable("CUSTOMER_ID", id);
 
