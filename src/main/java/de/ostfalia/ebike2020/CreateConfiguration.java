@@ -52,6 +52,9 @@ public class CreateConfiguration implements JavaDelegate {
         for (Map.Entry<Integer, Integer> entry : CompVar.entrySet()) {
             sqlInsertConfigElement(idConfig, execution.getVariable("PRODUCT_ID"), entry.getKey(), entry.getValue());
         }
+        boolean textAdded;
+        textAdded = !((String) execution.getVariable("ADDITIONAL_WISH")).isEmpty();
+        execution.setVariable("textAdded", textAdded);
     }
 
     public void sqlInsertConfigElement(int config, Object product, Object component, Object variant) throws SQLException {
