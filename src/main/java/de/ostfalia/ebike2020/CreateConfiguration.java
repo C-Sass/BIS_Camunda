@@ -4,9 +4,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 
 import java.sql.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,21 +20,19 @@ public class CreateConfiguration implements JavaDelegate {
     @Override
     public void execute(DelegateExecution execution) throws Exception {
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date date = new Date();
-
         CallableStatement max = connection.prepareCall("SELECT MAX(idKonfiguration) FROM konfiguration");
         ResultSet resultSet = max.executeQuery();
         int idConfig = !resultSet.next() ? 0 : resultSet.getInt(1) + 1;
-        resultSet.close();
-        max.close();
         execution.setVariable("CONFIG_ID", idConfig);
+
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp sqlNow = Timestamp.valueOf(now);
 
         String addConfig = "INSERT INTO `e_bike_2020`.`konfiguration` (`idKonfiguration`, `idKunde`, `Zeitstempel`, `FreitextWunsch`) VALUES (?, ?, ?, ?);";
         CallableStatement callableStatement = connection.prepareCall(addConfig);
         callableStatement.setInt(1, idConfig);
         callableStatement.setInt(2, (Integer) execution.getVariable("CUSTOMER_ID"));
-        callableStatement.setDate(3, java.sql.Date.valueOf(dateFormat.format(date)));
+        callableStatement.setTimestamp(3, sqlNow);
         callableStatement.setString(4, (String) execution.getVariable("ADDITIONAL_WISH"));
         callableStatement.executeUpdate();
 
@@ -55,6 +51,10 @@ public class CreateConfiguration implements JavaDelegate {
         boolean textAdded;
         textAdded = !((String) execution.getVariable("ADDITIONAL_WISH")).isEmpty();
         execution.setVariable("textAdded", textAdded);
+
+        resultSet.close();
+        callableStatement.close();
+        connection.close();
     }
 
     public void sqlInsertConfigElement(int config, Object product, Object component, Object variant) throws SQLException {
@@ -66,8 +66,6 @@ public class CreateConfiguration implements JavaDelegate {
         callableStatement.setInt(3, (Integer) component);
         callableStatement.setInt(4, (Integer) variant);
         callableStatement.executeUpdate();
-
-        callableStatement.close();
     }
 
     public void addCompVarS(Object product) throws SQLException {
@@ -104,7 +102,9 @@ public class CreateConfiguration implements JavaDelegate {
         preparedStatement.setInt(3, (Integer) var_basis);
         ResultSet resultSet = preparedStatement.executeQuery();
 
-        CompVar.put(resultSet.getInt("idKomponente"), resultSet.getInt("idVariante"));
+        while (resultSet.next()) {
+            CompVar.put(resultSet.getInt("idKomponente"), resultSet.getInt("idVariante"));
+        }
     }
 
     public void addCompVarL(Object product, Object var_basis1, Object var_basis40) throws SQLException {
