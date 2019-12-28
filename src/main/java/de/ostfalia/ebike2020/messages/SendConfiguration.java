@@ -12,6 +12,7 @@ public class SendConfiguration implements JavaDelegate {
         HashMap<String, Object> hashMap = new HashMap<>();
 
         hashMap.put("CUSTOMER_ID", execution.getVariable("CUSTOMER_ID"));
+        hashMap.put("CUSTOMER_NAME", execution.getVariable("CUSTOMER_NAME"));
         hashMap.put("PRODUCT_ID", execution.getVariable("PRODUCT_ID"));
         hashMap.put("RAHMEN_ID", execution.getVariable("RAHMEN_ID"));
         hashMap.put("RAHMEN_COMP_ID", 1);

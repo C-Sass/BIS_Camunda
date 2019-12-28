@@ -1,3 +1,51 @@
 <form name="AdditionalCosts" role=form>
-    //TODO Add Form
+
+    <div class="form-group">
+        <label>Zusatzwunsch</label>
+        <input cam-variable-name="ADDITIONAL_WISH"
+               cam-variable-type="String"
+               class="form-control"
+               disabled
+               type="text"/>
+    </div>
+
+    <div class="alert alert-danger" ng-if="!COMPONENT_ID">
+        <p>Bitte w&auml;hlen Sie eine Komponente aus.</p>
+    </div>
+
+    <!-- Dropdown Components -->
+    <div class="form-group">
+        <select cam-choices="AVAILABLE_COMPONENTS"
+                cam-variable-name="COMPONENT_ID"
+                cam-variable-type="Integer">
+        </select>
+    </div>
+
+    <!-- Dauer -->
+    <div class="form-group">
+        <label>Zus&auml;tzliche Montagedauer in Sekunden</label>
+        <input cam-variable-name="ADDITIONAL_TIME"
+               cam-variable-type="Double"
+               class="form-control"
+               step="1" type="number"/>
+    </div>
+
+    <!-- Kosten -->
+    <div class="form-group">
+        <label>Zus&auml;tzliche Montagekosten</label>
+        <input cam-variable-name="ADDITIONAL_COST"
+               cam-variable-type="Double"
+               class="form-control"
+               step="0.01" type="number"/>
+    </div>
+
+    <div class="form-group">
+        <label>Weitere Komponente bearbeiten?</label>
+        <select cam-variable-name="ANOTHER_COMPONENT"
+                cam-variable-type="Boolean">
+            <option value="true">Ja</option>
+            <option value="false">Nein</option>
+        </select>
+    </div>
+
 </form>

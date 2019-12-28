@@ -12,7 +12,8 @@ import java.util.Map;
 public class CreateConfiguration implements JavaDelegate {
 
     Connection connection = DatabaseConnection.getConnection();
-    HashMap<Integer, Integer> CompVar = new HashMap<>();
+    HashMap<Object, Object> CompVar = new HashMap<>();
+    boolean textAdded;
 
     public CreateConfiguration() throws SQLException {
     }
@@ -24,6 +25,7 @@ public class CreateConfiguration implements JavaDelegate {
         ResultSet resultSet = max.executeQuery();
         int idConfig = !resultSet.next() ? 0 : resultSet.getInt(1) + 1;
         execution.setVariable("CONFIG_ID", idConfig);
+        String addedWish = (String) execution.getVariable("ADDITIONAL_WISH");
 
         LocalDateTime now = LocalDateTime.now();
         Timestamp sqlNow = Timestamp.valueOf(now);
@@ -33,23 +35,29 @@ public class CreateConfiguration implements JavaDelegate {
         callableStatement.setInt(1, idConfig);
         callableStatement.setInt(2, (Integer) execution.getVariable("CUSTOMER_ID"));
         callableStatement.setTimestamp(3, sqlNow);
-        callableStatement.setString(4, (String) execution.getVariable("ADDITIONAL_WISH"));
+        callableStatement.setString(4, addedWish);
         callableStatement.executeUpdate();
+
 
         addCompVarS(execution.getVariable("PRODUCT_ID"));
         addCompVarM(execution.getVariable("PRODUCT_ID"), execution.getVariable("RAHMEN_COMP_ID"), execution.getVariable("RAHMEN_ID"));
         addCompVarM(execution.getVariable("PRODUCT_ID"), execution.getVariable("MOTOR_COMP_ID"), execution.getVariable("MOTOR_ID"));
         addCompVarL(execution.getVariable("PRODUCT_ID"), execution.getVariable("RAHMEN_ID"), execution.getVariable("MOTOR_ID"));
 
-        sqlInsertConfigElement(idConfig, execution.getVariable("PRODUCT_ID"), execution.getVariable("RAHMEN_ID"), execution.getVariable("RAHMEN_COMP_ID"));
-        sqlInsertConfigElement(idConfig, execution.getVariable("PRODUCT_ID"), execution.getVariable("FARBE_ID"), execution.getVariable("FARBE_COMP_ID"));
-        sqlInsertConfigElement(idConfig, execution.getVariable("PRODUCT_ID"), execution.getVariable("AKKU_ID"), execution.getVariable("AKKU_COMP_ID"));
-        sqlInsertConfigElement(idConfig, execution.getVariable("PRODUCT_ID"), execution.getVariable("MOTOR_ID"), execution.getVariable("MOTOR_COMP_ID"));
-        for (Map.Entry<Integer, Integer> entry : CompVar.entrySet()) {
+        CompVar.put(execution.getVariable("RAHMEN_COMP_ID"), execution.getVariable("RAHMEN_ID"));
+        CompVar.put(execution.getVariable("FARBE_COMP_ID"), execution.getVariable("FARBE_ID"));
+        CompVar.put(execution.getVariable("AKKU_COMP_ID"), execution.getVariable("AKKU_ID"));
+        CompVar.put(execution.getVariable("MOTOR_COMP_ID"), execution.getVariable("MOTOR_ID"));
+
+        for (Map.Entry<Object, Object> entry : CompVar.entrySet()) {
             sqlInsertConfigElement(idConfig, execution.getVariable("PRODUCT_ID"), entry.getKey(), entry.getValue());
         }
-        boolean textAdded;
-        textAdded = !((String) execution.getVariable("ADDITIONAL_WISH")).isEmpty();
+        String wish = "SELECT * FROM konfiguration WHERE idKonfiguration = ?";
+        CallableStatement statement = connection.prepareCall(wish);
+        statement.setInt(1, idConfig);
+
+        textAdded = addedWish != null && !addedWish.trim().isEmpty();
+
         execution.setVariable("textAdded", textAdded);
 
         resultSet.close();
@@ -81,7 +89,9 @@ public class CreateConfiguration implements JavaDelegate {
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
-            CompVar.put(resultSet.getInt("idKomponente"), resultSet.getInt("idVariante"));
+            if (!CompVar.containsKey(resultSet.getInt("idKomponente"))) {
+                CompVar.put(resultSet.getInt("idKomponente"), resultSet.getInt("idVariante"));
+            }
         }
     }
 
@@ -103,7 +113,9 @@ public class CreateConfiguration implements JavaDelegate {
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
-            CompVar.put(resultSet.getInt("idKomponente"), resultSet.getInt("idVariante"));
+            if (!CompVar.containsKey(resultSet.getInt("idKomponente"))) {
+                CompVar.put(resultSet.getInt("idKomponente"), resultSet.getInt("idVariante"));
+            }
         }
     }
 

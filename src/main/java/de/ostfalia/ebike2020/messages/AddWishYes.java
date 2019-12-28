@@ -1,5 +1,6 @@
 package de.ostfalia.ebike2020.messages;
 
+import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 
@@ -23,5 +24,8 @@ public class AddWishYes implements JavaDelegate {
         hashMap.put("MOTOR_ID", execution.getVariable("MOTOR_ID"));
         hashMap.put("MOTOR_COMP_ID", 40);
         hashMap.put("ADDITIONAL_WISH", execution.getVariable("ADDITIONAL_WISH"));
+
+        RuntimeService runtimeService = execution.getProcessEngineServices().getRuntimeService();
+        runtimeService.startProcessInstanceByMessage("Prüfe Baubarkeit", hashMap);
     }
 }
