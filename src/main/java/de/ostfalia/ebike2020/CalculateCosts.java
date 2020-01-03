@@ -10,42 +10,59 @@ import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 
+
+
 public class CalculateCosts implements JavaDelegate {
+    Double totalCosts;
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
         Connection connection = DatabaseConnection.getConnection();
-        Map <Float, Float> additionCosts = new HashMap<>();
-        Map <Float, Integer> materialCosts = new HashMap<>();
+        Map <Double, Integer> materialCosts = new HashMap<>();
         //Produktionskosten fehlen noch...Idee wie einbauen?
-        // Map <Float> productionCosts  = new HashMap<>();
+        Map <Double, Double> productionCosts  = new HashMap<>();
+        Map<Double, Double> addProdCosts = new HashMap<>();
+
+
 
         // Test Statement für Konfiguration 2
-        String getCosts = "* " +
-                "FROM konfigurationselement " +
-                "LEFT JOIN variante ON variante.idVariante = konfigurationselement.idVariante " +
-                "LEFT JOIN komponente ON komponente.idKomponente = variante.idKomponente " +
-                "LEFT JOIN arbeitsgang ON arbeitsgang.idArbeitsgang = komponente.idKomponente " +
-                "LEFT JOIN ressource ON ressource.idRessource = arbeitsgang.idRessource " +
-                "WHERE idKonfiguration = 2" +
-                "AND variante.idKomponente = konfigurationselement.idKomponente";
+        String getCosts = "SELECT Einzelpreis, Menge_pro_Produkt, Montagedauer_sec, Kostensatz_h, Zusatzmontagedauer_sec, Zusatzmaterialkosten\n" +
+                "FROM e_bike_2020.konfigurationselement \n" +
+                "LEFT JOIN e_bike_2020.variante ON variante.idVariante = konfigurationselement.idVariante\n" +
+                "LEFT JOIN e_bike_2020.komponente ON komponente.idKomponente = variante.idKomponente\n" +
+                "LEFT JOIN e_bike_2020.arbeitsgang ON arbeitsgang.idArbeitsgang = komponente.idKomponente\n" +
+                "LEFT JOIN e_bike_2020.ressource ON ressource.idRessource = arbeitsgang.idRessource\n" +
+                "Where idKonfiguration = 2 AND variante.idKomponente = konfigurationselement.idKomponente";
 
         PreparedStatement preparedStatement = connection.prepareStatement(getCosts);
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
-                additionCosts.put(resultSet.getFloat("Zusatzmontagedauer_sec"),
-                        resultSet.getFloat("Zusatzmaterialkosten"));
-                materialCosts.put(resultSet.getFloat("Einzelpreis"),
+            // is not NULL
+            materialCosts.put(resultSet.getDouble("Einzelpreis"),
                         resultSet.getInt("Menge_pro_Produkt"));
-               // productionCosts.put(resultSet.getInt("Kostensatz_h"));
+
+            productionCosts.put(resultSet.getDouble("Kostensatz_h"),
+                        resultSet.getDouble("Montagedauer_sec"));
+            addProdCosts.put(resultSet.getDouble("Zusatzmontagedauer_sec"), resultSet.getDouble("Kostensatz_h"));
+
+            if (resultSet.getDouble("Zusatzmaterialkosten") != 0.0) {
+                materialCosts.put(resultSet.getDouble("Zusatzmaterialkosten"),
+                        1);
+            }
         }
-        execution.setVariable("ZUSATZKOSTEN", Variables.objectValue(additionCosts)
-                .serializationDataFormat(Variables.SerializationDataFormats.JSON)
-                .create());
-        execution.setVariable("MATERIALKOSTEN", Variables.objectValue(materialCosts)
-                .serializationDataFormat(Variables.SerializationDataFormats.JSON)
-                .create());
+
+        for (Map.Entry<Double, Integer> entry : materialCosts.entrySet()) {
+           totalCosts += (entry.getKey()* entry.getValue());
+        }
+        for (Map.Entry<Double, Double> entry : productionCosts.entrySet()) {
+            totalCosts += (entry.getKey()* entry.getValue());
+        }
+        for (Map.Entry<Double, Double> entry : addProdCosts.entrySet()) {
+            totalCosts += (entry.getKey()* entry.getValue());
+        }
+
+        execution.setVariable("totalCosts", totalCosts);
 
         resultSet.close();
         preparedStatement.close();
