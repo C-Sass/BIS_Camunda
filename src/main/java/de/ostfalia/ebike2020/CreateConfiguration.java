@@ -13,7 +13,6 @@ public class CreateConfiguration implements JavaDelegate {
 
     Connection connection = DatabaseConnection.getConnection();
     HashMap<Object, Object> CompVar = new HashMap<>();
-    boolean textAdded;
 
     public CreateConfiguration() throws SQLException {
     }
@@ -21,18 +20,13 @@ public class CreateConfiguration implements JavaDelegate {
     @Override
     public void execute(DelegateExecution execution) throws Exception {
 
-        CallableStatement max = connection.prepareCall("SELECT MAX(idKonfiguration) FROM konfiguration");
-        ResultSet resultSet = max.executeQuery();
-        int idConfig = !resultSet.next() ? 0 : resultSet.getInt(1) + 1;
-        execution.setVariable("CONFIG_ID", idConfig);
         String addedWish = (String) execution.getVariable("ADDITIONAL_WISH");
-
         LocalDateTime now = LocalDateTime.now();
         Timestamp sqlNow = Timestamp.valueOf(now);
 
         String addConfig = "INSERT INTO `e_bike_2020`.`konfiguration` (`idKonfiguration`, `idKunde`, `Zeitstempel`, `FreitextWunsch`) VALUES (?, ?, ?, ?);";
         CallableStatement callableStatement = connection.prepareCall(addConfig);
-        callableStatement.setInt(1, idConfig);
+        callableStatement.setInt(1, (Integer) execution.getVariable("CONFIG_ID"));
         callableStatement.setInt(2, (Integer) execution.getVariable("CUSTOMER_ID"));
         callableStatement.setTimestamp(3, sqlNow);
         callableStatement.setString(4, addedWish);
@@ -50,17 +44,9 @@ public class CreateConfiguration implements JavaDelegate {
         CompVar.put(execution.getVariable("MOTOR_COMP_ID"), execution.getVariable("MOTOR_ID"));
 
         for (Map.Entry<Object, Object> entry : CompVar.entrySet()) {
-            sqlInsertConfigElement(idConfig, execution.getVariable("PRODUCT_ID"), entry.getKey(), entry.getValue());
+            sqlInsertConfigElement((Integer) execution.getVariable("CONFIG_ID"), execution.getVariable("PRODUCT_ID"), entry.getKey(), entry.getValue());
         }
-        String wish = "SELECT * FROM konfiguration WHERE idKonfiguration = ?";
-        CallableStatement statement = connection.prepareCall(wish);
-        statement.setInt(1, idConfig);
 
-        textAdded = addedWish != null && !addedWish.trim().isEmpty();
-
-        execution.setVariable("textAdded", textAdded);
-
-        resultSet.close();
         callableStatement.close();
         connection.close();
     }

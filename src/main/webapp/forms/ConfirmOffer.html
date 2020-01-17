@@ -1,4 +1,19 @@
 <form name="ConfirmOffer" role=form>
-    //TODO Add Form
-    // bool: offerConfirmCustomer
+    <div class="form-group">
+        <label>Unser Angebot für Ihr E-Bike beträgt:</label>
+        <input cam-variable-name="TOTAL_COSTS"
+               cam-variable-type="Double"
+               class="form-control"
+               disabled
+               type="number"/>
+    </div>
+
+    <div class="form-group">
+        <label>Nehmen Sie das Angebot an?</label>
+        <select cam-variable-name="offerConfirmCustomer"
+                cam-variable-type="Boolean">
+            <option value="true">Ja</option>
+            <option value="false">Nein</option>
+        </select>
+    </div>
 </form>

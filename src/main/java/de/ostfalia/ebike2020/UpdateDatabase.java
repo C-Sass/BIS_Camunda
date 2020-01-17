@@ -21,5 +21,8 @@ public class UpdateDatabase implements JavaDelegate {
         preparedStatement.setInt(3, (Integer) execution.getVariable("CONFIG_ID"));
         preparedStatement.setInt(4, (Integer) execution.getVariable("COMPONENT_ID"));
         preparedStatement.executeUpdate();
+
+        preparedStatement.close();
+        connection.close();
     }
 }

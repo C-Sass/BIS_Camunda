@@ -24,6 +24,7 @@ public class AddWishYes implements JavaDelegate {
         hashMap.put("MOTOR_ID", execution.getVariable("MOTOR_ID"));
         hashMap.put("MOTOR_COMP_ID", 40);
         hashMap.put("ADDITIONAL_WISH", execution.getVariable("ADDITIONAL_WISH"));
+        hashMap.put("DEMO_BUSINESS_KEY", execution.getVariable("DEMO_BUSINESS_KEY"));
 
         RuntimeService runtimeService = execution.getProcessEngineServices().getRuntimeService();
         runtimeService.startProcessInstanceByMessage("Prüfe Baubarkeit", hashMap);

@@ -1,4 +1,37 @@
 <form name="CheckOffer" role=form>
-    //TODO Add Form
-    // bool: offerConfirm
+    <div class="form-group">
+        <label>Kunde</label>
+        <input cam-variable-name="CUSTOMER_NAME"
+               cam-variable-type="String"
+               class="form-control"
+               disabled
+               type="text"/>
+    </div>
+
+    <div class="form-group">
+        <label>Konfigurations ID</label>
+        <input cam-variable-name="CONFIG_ID"
+               cam-variable-type="Integer"
+               class="form-control"
+               disabled
+               type="number"/>
+    </div>
+
+    <div class="form-group">
+        <label>Gesamte Kosten</label>
+        <input cam-variable-name="TOTAL_COSTS"
+               cam-variable-type="Double"
+               class="form-control"
+               disabled
+               type="number"/>
+    </div>
+
+    <div class="form-group">
+        <label>Das Angebot erstellen?</label>
+        <select cam-variable-name="offerConfirm"
+                cam-variable-type="Boolean">
+            <option value="true">Ja</option>
+            <option value="false">Nein</option>
+        </select>
+    </div>
 </form>
