@@ -44,9 +44,9 @@ public class CreateOffer implements JavaDelegate {
 
     public void reservation(int phyB, int resB, int comp, int var) throws SQLException {
 
-        String updateDB = "UPDATE `e_bike_2020`.`variante` " +
-                "SET `Bestand_Physisch` = '?', `Bestand_Reserviert` = '?' " +
-                "WHERE (`idKomponente` = '?') and (`idVariante` = '?');";
+        String updateDB = "UPDATE variante " +
+                "SET Bestand_Physisch = ?, Bestand_Reserviert = ? " +
+                "WHERE (idKomponente = ?) and (idVariante = ?)";
 
         PreparedStatement preparedStatement = connection.prepareStatement(updateDB);
         preparedStatement.setInt(1, phyB);

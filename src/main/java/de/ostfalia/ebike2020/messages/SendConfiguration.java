@@ -20,12 +20,10 @@ public class SendConfiguration implements JavaDelegate {
         int idConfig = !resultSet.next() ? 0 : resultSet.getInt(1) + 1;
         execution.setVariable("CONFIG_ID", idConfig);
 
-        if (execution.getVariable("ADDITIONAL_WISH").equals("keine")) {
-            execution.setVariable("textAdded", false);
-        } else execution.setVariable("textAdded", true);
+        boolean textAdded = !execution.getVariable("ADDITIONAL_WISH").equals("keine");
+        execution.setVariable("textAdded", textAdded);
 
         HashMap<String, Object> hashMap = new HashMap<>();
-
         hashMap.put("CUSTOMER_ID", execution.getVariable("CUSTOMER_ID"));
         hashMap.put("CUSTOMER_NAME", execution.getVariable("CUSTOMER_NAME"));
         hashMap.put("PRODUCT_ID", execution.getVariable("PRODUCT_ID"));

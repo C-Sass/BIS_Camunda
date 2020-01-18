@@ -1,21 +1,18 @@
-package de.ostfalia.ebike2020;
-
-import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.engine.delegate.JavaDelegate;
+import de.ostfalia.ebike2020.DatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 
-public class CalculateCosts implements JavaDelegate {
+public class Debug {
+    static double totalCosts;
 
-    @Override
-    public void execute(DelegateExecution execution) throws Exception {
+    public static void main(String[] args) throws SQLException {
         Connection connection = DatabaseConnection.getConnection();
         HashMap<Double, Integer> materialCosts = new HashMap<>();
         HashMap<Double, Integer> productionCosts = new HashMap<>();
-        double totalCosts = 0.0;
 
         String getCosts = "SELECT Einzelpreis, Menge_pro_Produkt, Montagedauer_sec, Kostensatz_h, Zusatzmontagedauer_sec, Zusatzmaterialkosten " +
                 "FROM e_bike_2020.konfigurationselement " +
@@ -26,7 +23,8 @@ public class CalculateCosts implements JavaDelegate {
                 "WHERE idKonfiguration = ?";
 
         PreparedStatement preparedStatement = connection.prepareStatement(getCosts);
-        preparedStatement.setInt(1, (Integer) execution.getVariable("CONFIG_ID"));
+        preparedStatement.setInt(1, 1);
+        //preparedStatement.setInt(1, (Integer) execution.getVariable("CONFIG_ID"));
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
@@ -46,18 +44,25 @@ public class CalculateCosts implements JavaDelegate {
         }
 
         for (HashMap.Entry<Double, Integer> entry : materialCosts.entrySet()) {
-            double key = entry.getKey();
-            int value = entry.getValue();
-            totalCosts += (key * value);
+            System.out.println("material_key: " + entry.getKey());
+            System.out.println("material_value: " + entry.getValue());
+            totalCosts += (entry.getKey() * entry.getValue());
+            System.out.println("material_added: " + entry.getKey() * entry.getValue());
+            System.out.println("totalCosts: " + totalCosts);
+            System.out.println();
         }
         for (HashMap.Entry<Double, Integer> entry : productionCosts.entrySet()) {
-            double key = entry.getKey();
-            int value = entry.getValue();
-            totalCosts += ((key / 3600) * value);
+            System.out.println("prod_key: " + entry.getKey());
+            System.out.println("prod_value: " + entry.getValue());
+            totalCosts += ((entry.getKey() / 3600) * entry.getValue());
+            System.out.println("prod_added: " + (entry.getKey() / 3600) * entry.getValue());
+            System.out.println("totalCosts: " + totalCosts);
+            System.out.println();
         }
 
         totalCosts *= 1.5; //Gewinnzuschlag
-        execution.setVariable("totalCosts", totalCosts);
+        System.out.println("totalCosts + Gewinn: " + totalCosts);
+        //execution.setVariable("totalCosts", totalCosts);
 
         resultSet.close();
         preparedStatement.close();

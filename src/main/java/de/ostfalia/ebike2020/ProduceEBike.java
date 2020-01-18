@@ -48,8 +48,8 @@ public class ProduceEBike implements JavaDelegate {
     public void booking(int bookB, int phyB, int comp, int var) throws SQLException {
 
         String updateDB = "UPDATE `e_bike_2020`.`variante` " +
-                "SET `Bestand_Bestellt` = '?', `Bestand_Physisch` = '?' " +
-                "WHERE (`idKomponente` = '?') and (`idVariante` = '?');";
+                "SET `Bestand_Bestellt` = ?, `Bestand_Physisch` = ? " +
+                "WHERE (`idKomponente` = ?) and (`idVariante` = ?);";
 
         PreparedStatement preparedStatement = connection.prepareStatement(updateDB);
         preparedStatement.setInt(1, bookB);
